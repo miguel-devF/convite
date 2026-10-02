@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Você está convidado!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa:#d6338a; --rosa-escuro:#8a1f58; --rosa-claro:#fde9f1; --ouro:#b8932a; --ouro-escuro:#8a6a10;
+  --abertura:url("abertura.jpg"); --convite:url("convite.jpg");
+  --vh:100vh; --H:var(--vh);
+  --s:min(100vw,calc(var(--H)*736/1307)); --u:calc(var(--s)/100);
+}
+@supports (height:100dvh){:root{--vh:100dvh}}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{background:#f7dbe6;display:flex;justify-content:center;align-items:center;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;
+  font-family:"Cormorant Garamond",Georgia,serif;color:var(--rosa-escuro)}
+.stage{position:relative;flex:none;width:100vw;height:var(--H);overflow:hidden;background:#fbeaf1}
+/* "arte" tem a proporção das imagens; em telas altas ela é cortada nas laterais */
+.arte{position:absolute;top:0;left:50%;height:100%;width:calc(var(--H)*736/1307);transform:translateX(-50%)}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--rosa-escuro);outline-offset:3px}
+
+/* Telas internas */
+.tela{position:absolute;inset:0;z-index:1;background:var(--convite) center/100% 100% no-repeat;
+  opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s}
+.tela.ativa{opacity:1;visibility:visible}
+
+/* Tela principal */
+.conteudo{position:absolute;top:36.5%;bottom:3%;left:50%;width:calc(var(--s)*.88);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;text-align:center;opacity:0;transition:opacity 1s ease .9s}
+.stage.aberto .conteudo{opacity:1}
+.nome{white-space:nowrap;max-width:100%;font-family:"Parisienne",cursive;font-weight:400;font-size:calc(var(--u)*16);line-height:1.05;color:var(--rosa)}
+.idade{font-style:italic;font-weight:600;font-size:calc(var(--u)*5.8);color:var(--rosa);margin-top:calc(var(--u)*-1.5)}
+.msg{font-style:italic;font-weight:600;font-size:calc(var(--u)*4);line-height:1.25;max-width:92%}
+.data{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*3)}
+.bloco{display:flex;flex-direction:column;align-items:center}
+.rot{font-family:"Parisienne",cursive;color:var(--ouro);font-size:calc(var(--u)*6);line-height:1}
+.val{font-family:"Parisienne",cursive;color:var(--rosa);font-size:calc(var(--u)*10.5);line-height:1.05}
+.data svg{width:calc(var(--u)*11);height:calc(var(--u)*11)}
+.local{color:var(--ouro);font-weight:600;font-size:calc(var(--u)*5)}
+.icones{display:flex;justify-content:center;gap:calc(var(--u)*3)}
+.ic{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*1);width:calc(var(--u)*22);
+  background:none;border:0;cursor:pointer;color:var(--rosa-escuro);transition:transform .15s}
+.ic:active{transform:scale(.94)}
+.ic svg{width:calc(var(--u)*14.5);height:calc(var(--u)*14.5);filter:drop-shadow(0 3px 5px rgba(214,51,138,.35))}
+.ic span{font-size:max(12px,calc(var(--u)*3.4));line-height:1.12;font-weight:600}
+.dica{font-style:italic;font-weight:600;font-size:max(12px,calc(var(--u)*3.4));color:var(--ouro)}
+.fecho{font-family:"Parisienne",cursive;font-size:calc(var(--u)*7.5);color:var(--rosa);line-height:1}
+
+/* Abas (presença, local, presentes) */
+.cartao{position:absolute;top:37%;bottom:8%;left:50%;width:calc(var(--s)*.84);transform:translateX(-50%);background:rgba(255,255,255,.8);border-radius:calc(var(--u)*5);
+  padding:calc(var(--u)*4.5);display:flex;flex-direction:column;gap:calc(var(--u)*3.5);overflow:auto;
+  box-shadow:0 8px 24px rgba(138,31,88,.15)}
+.voltar{align-self:flex-start;background:var(--rosa-claro);border:1.5px solid var(--rosa);color:var(--rosa-escuro);
+  border-radius:999px;padding:.35em 1em;font-weight:600;font-size:calc(var(--u)*4.4);cursor:pointer}
+h2{font-family:"Parisienne",cursive;font-weight:400;color:var(--rosa);text-align:center;font-size:calc(var(--u)*11);line-height:1}
+.cartao p,.cartao label{font-size:calc(var(--u)*4.6);font-weight:600;text-align:center}
+.cartao label{text-align:left}
+input{width:100%;font:600 max(16px,calc(var(--u)*5))/1.2 "Cormorant Garamond",Georgia,serif;color:var(--rosa-escuro);
+  padding:.65em .85em;border:1.5px solid var(--rosa);border-radius:12px;background:#fff;margin-top:.3em}
+.erro{color:#b3123f;min-height:1.2em}
+.btn{display:block;width:100%;padding:.7em 1em;border:0;border-radius:999px;background:var(--rosa);color:#fff;
+  font-weight:600;font-size:calc(var(--u)*4.8);text-align:center;text-decoration:none;cursor:pointer;
+  box-shadow:0 6px 16px rgba(214,51,138,.35)}
+.lista{list-style:none;padding:0;display:flex;flex-direction:column;gap:calc(var(--u)*4.5);width:90%;align-self:center;margin-top:calc(var(--u)*2)}
+.lista li{display:flex;align-items:center;gap:calc(var(--u)*4);font-size:calc(var(--u)*4.8);font-weight:600;line-height:1.2;color:var(--ouro-escuro);text-align:left}
+.lista svg{flex:none;width:calc(var(--u)*11);height:calc(var(--u)*11);stroke:var(--ouro);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.orn{align-self:center;margin-top:auto;color:var(--ouro);font-size:calc(var(--u)*6)}
+.vazio{border:2px dashed var(--rosa);border-radius:12px;padding:calc(var(--u)*8) calc(var(--u)*4);color:var(--rosa)}
+
+/* Abertura (duas folhas) */
+.folha{position:absolute;top:0;bottom:0;background-image:var(--abertura);background-repeat:no-repeat;
+  transition:transform 1.5s cubic-bezier(.65,0,.25,1);will-change:transform;z-index:3}
+.esq{left:0;width:53%;background-size:188.68% 100%;background-position:left top}
+.dir{left:53%;width:47%;background-size:212.77% 100%;background-position:right top}
+.stage.aberto .esq{transform:translateX(-102%)}
+.stage.aberto .dir{transform:translateX(102%)}
+.stage.fim .folha,.stage.fim .lacre{display:none}
+.lacre{position:absolute;z-index:4;left:52.2%;top:48.7%;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);
+  border:0;border-radius:50%;background:transparent;cursor:pointer;transition:opacity .4s}
+.lacre::after{content:"";position:absolute;inset:-6%;border-radius:50%;border:2px solid rgba(214,51,138,.55);
+  animation:pulso 2s ease-out infinite}
+.stage.aberto .lacre{opacity:0;pointer-events:none}
+@keyframes pulso{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.3);opacity:0}}
+/* Desktop e telas largas: coluna do tamanho de um celular, centralizada */
+@media (min-aspect-ratio:736/1307){
+  .stage{width:calc(var(--H)*736/1307);box-shadow:0 20px 60px rgba(138,31,88,.25)}
+}
+/* Celular deitado ou janela baixa: tamanho fixo e a página rola na vertical */
+@media (orientation:landscape) and (max-height:560px){
+  :root{--H:calc(min(100vw,440px)*1307/736)}
+  body{overflow:auto;align-items:flex-start}
+  .stage{width:var(--s);height:var(--H)}
+}
+@media (prefers-reduced-motion:reduce){
+  .folha{transition-duration:.01s}.conteudo{transition-delay:0s}.lacre::after{animation:none}.tela{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+<div class="arte">
+
+  <section class="tela ativa" id="t-home" inert>
+    <div class="conteudo">
+      <h1 class="nome" id="nome"></h1>
+      <p class="idade" id="idade"></p>
+      <p class="msg" id="msg"></p>
+      <div class="data">
+        <div class="bloco"><span class="rot" id="semana"></span><span class="val" id="dia"></span></div>
+        <svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="#ee5fae"/><circle cx="30" cy="30" r="19" fill="#f9b8d9"/><path d="M19 24 Q30 14 41 24" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></svg>
+        <div class="bloco"><span class="rot">horário</span><span class="val" id="hora"></span></div>
+      </div>
+      <p class="local" id="localnome"></p>
+      <div class="icones">
+        <button class="ic" data-ir="rsvp" type="button">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#e7459f"/><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><path d="M48 70C20 52 26 28 41 30C46 31 48 35 48 38C48 35 52 31 57 30C72 28 76 52 48 70Z" fill="#fff"/><circle cx="68" cy="68" r="13" fill="#e7459f" stroke="#fff" stroke-width="3"/><path d="M61.5 68l4.5 4.5 8-9" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Confirmar presença</span>
+        </button>
+        <button class="ic" data-ir="local" type="button">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#e7459f"/><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><path d="M50 22C37 22 28 32 28 43C28 59 50 80 50 80C50 80 72 59 72 43C72 32 63 22 50 22Z" fill="#fff"/><path d="M50 55C39 47 43 38 47.5 40C49.5 40.700 50 42.500 50 43.500C50 42.500 50.500 40.700 52.500 40C57 38 61 47 50 55Z" fill="#e7459f"/></svg>
+          <span>Acessar localização</span>
+        </button>
+        <button class="ic" data-ir="presentes" type="button">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#e7459f"/><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><rect x="29" y="46" width="42" height="26" rx="3" fill="#fff"/><rect x="26" y="38" width="48" height="10" rx="3" fill="#fff"/><rect x="47" y="38" width="6" height="34" fill="#e7459f"/><path d="M50 38C44 25 33 29 40 38Z" fill="#fff"/><path d="M50 38C56 25 67 29 60 38Z" fill="#fff"/></svg>
+          <span>Sugestões de presentes</span>
+        </button>
+      </div>
+      <p class="dica">Toque nos ícones para interagir</p>
+      <p class="fecho">Esperamos por você!</p>
+    </div>
+  </section>
+
+  <section class="tela" id="t-rsvp" inert>
+    <div class="cartao">
+      <button class="voltar" data-voltar type="button">‹ Voltar</button>
+      <h2>Confirmar presença</h2>
+      <form id="form" novalidate>
+        <label for="nomeConv">Seu nome completo</label>
+        <input id="nomeConv" name="nome" type="text" autocomplete="name" placeholder="Nome e sobrenome">
+        <p class="erro" id="erro" role="alert"></p>
+        <button class="btn" type="submit">Confirmar presença</button>
+      </form>
+      <div id="ok" hidden>
+        <h2>Presença confirmada!</h2>
+        <p id="okTxt"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tela" id="t-local" inert>
+    <div class="cartao">
+      <button class="voltar" data-voltar type="button">‹ Voltar</button>
+      <h2>Localização</h2>
+      <p id="locNome"></p>
+      <p id="locEnd"></p>
+      <p id="locRef"></p>
+      <a class="btn" id="mapa" href="#" target="_blank" rel="noopener">Abrir no Google Maps</a>
+    </div>
+  </section>
+
+  <section class="tela" id="t-presentes" inert>
+    <div class="cartao">
+      <button class="voltar" data-voltar type="button">‹ Voltar</button>
+      <h2>Sugestões de presentes</h2>
+      <ul class="lista" id="lista"></ul>
+      <p class="vazio" id="presVazio" hidden>As sugestões de presentes chegam em breve.</p>
+      <span class="orn" aria-hidden="true">♡</span>
+    </div>
+  </section>
+
+  <div class="folha esq" aria-hidden="true"></div>
+  <div class="folha dir" aria-hidden="true"></div>
+  <button class="lacre" id="lacre" type="button" aria-label="Abrir convite"></button>
+</div>
+</main>
+
+<script>
+/* ====== EDITE AQUI ====== */
+var CONVITE = {
+  nome: "Jasmyn Vitória",
+  idade: "faz um aninho",
+  mensagem: "Uma festa cheia de alegria, brilho e muita diversão está por vir. Venha comemorar comigo!",
+  diaSemana: "sábado",
+  dia: "14.11",
+  hora: "14h",
+  localNome: "Casa Amarela Schwambach",
+  endereco: "",                  // opcional: rua e número
+  mapaUrl: "https://goo.gl/maps/S1Dog2E7smXJPDSt8",
+  referencia: "Nova COOPRAM",
+  mapaBusca: "Casa Amarela Schwambach",   // usado só se mapaUrl estiver vazio
+  whatsapp: "5527998381344",     // DDI + DDD + número de quem recebe as confirmações
+  mensagemRsvp: "Olá! Confirmo a presença de {nome} no aniversário da Jasmyn Vitória 💖",
+  rsvpEndpoint: "",              // opcional: URL para gravar as confirmações (Apps Script, Firebase...)
+  // ícones: roupa, calcado, brinquedo, livro, presente
+  presentes: [
+    {icone:"roupa",texto:"Roupa – tamanho 1 a 2 anos"},
+    {icone:"calcado",texto:"Calçado – 19 a 20"},
+    {icone:"brinquedo",texto:"Brinquedos educativos e criativos"}
+  ]
+};
+/* ======================== */
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var C=CONVITE, stage=$("stage");
+  $("nome").textContent=C.nome; $("idade").textContent=C.idade; $("msg").textContent=C.mensagem;
+  $("semana").textContent=C.diaSemana; $("dia").textContent=C.dia; $("hora").textContent=C.hora;
+  $("localnome").textContent=C.localNome; $("locNome").textContent=C.localNome; $("locEnd").textContent=C.endereco;
+  $("mapa").href=C.mapaUrl||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(C.mapaBusca));
+  $("locEnd").hidden=!C.endereco;
+  $("locRef").textContent="Ponto de referência: "+C.referencia;$("locRef").hidden=!C.referencia;
+  var IC={
+    roupa:'<path d="M19 6l3 6h4l3-6M22 12l-3 10-8 20h26l-8-20-3-10M19 22h10"/>',
+    calcado:'<path d="M6 32c7 0 9-5 11-11l6 3c3 2 8 3 19 4v6H6zM6 38h36"/>',
+    brinquedo:'<rect x="8" y="28" width="14" height="14"/><rect x="24" y="28" width="14" height="14"/><rect x="16" y="12" width="14" height="14"/>',
+    livro:'<path d="M24 14C18 10 12 10 6 12v26c6-2 12-2 18 2zM24 14c6-4 12-4 18-2v26c-6-2-12-2-18 2z"/>',
+    presente:'<rect x="8" y="20" width="32" height="22"/><path d="M6 14h36v6H6zM24 14v28M24 14c-6-8-14-4-9 0M24 14c6-8 14-4 9 0"/>'
+  };
+  (C.presentes||[]).forEach(function(p){
+    var li=document.createElement("li"),s=document.createElement("span");
+    li.innerHTML='<svg viewBox="0 0 48 48" aria-hidden="true">'+(IC[p.icone]||IC.presente)+'</svg>';
+    s.textContent=p.texto;li.appendChild(s);$("lista").appendChild(li);
+  });
+  $("presVazio").hidden=!!(C.presentes&&C.presentes.length);
+  document.title="Convite – "+C.nome;
+  function ajustaNome(){var el=$("nome"),z=16;el.style.fontSize="calc(var(--u)*"+z+")";
+    while(el.scrollWidth>el.clientWidth+1&&z>8){z-=.5;el.style.fontSize="calc(var(--u)*"+z+")"}}
+  ajustaNome();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ajustaNome);
+  window.addEventListener("resize",ajustaNome);
+
+  function ir(n){
+    document.querySelectorAll(".tela").forEach(function(t){t.classList.remove("ativa");t.setAttribute("inert","")});
+    var el=$("t-"+n);el.classList.add("ativa");el.removeAttribute("inert");
+    var f=el.querySelector("input,.voltar");if(n!=="home"&&f)setTimeout(function(){f.focus({preventScroll:true})},380);
+  }
+  function abrir(n){ir(n);try{history.pushState({t:n},"")}catch(e){}}
+  function voltar(){
+    try{if(history.state&&history.state.t){history.back();return}}catch(e){}
+    ir("home");
+  }
+  window.addEventListener("popstate",function(e){ir((e.state&&e.state.t)||"home")});
+  document.querySelectorAll("[data-ir]").forEach(function(b){b.addEventListener("click",function(){abrir(b.dataset.ir)})});
+  document.querySelectorAll("[data-voltar]").forEach(function(b){b.addEventListener("click",voltar)});
+
+  $("lacre").addEventListener("click",function(){
+    stage.classList.add("aberto");$("t-home").removeAttribute("inert");
+    setTimeout(function(){stage.classList.add("fim")},1700);
+  });
+
+  $("form").addEventListener("submit",function(e){
+    e.preventDefault();
+    var nome=$("nomeConv").value.trim().replace(/\s+/g," ");
+    if(nome.length<5||nome.indexOf(" ")<0){$("erro").textContent="Digite seu nome completo (nome e sobrenome).";$("nomeConv").focus();return}
+    $("erro").textContent="";
+    if(C.rsvpEndpoint){
+      fetch(C.rsvpEndpoint,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
+        body:JSON.stringify({nome:nome,data:new Date().toISOString()})}).catch(function(){});
+    }else{
+      window.open("https://wa.me/"+C.whatsapp+"?text="+encodeURIComponent(C.mensagemRsvp.replace("{nome}",nome)),"_blank");
+    }
+    $("okTxt").textContent=nome+", sua presença foi confirmada. Esperamos por você!";
+    $("form").hidden=true;$("ok").hidden=false;
+  });
+})();
+</script>
+</body>
+</html>
